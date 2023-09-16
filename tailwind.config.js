@@ -28,12 +28,12 @@ module.exports = {
         'custom': '20px', // تحديد قيمة الحدود المستديرة المخصصة هنا
       },
       colors: {
-        backGraound: '#f8f9fa',
-        minueBg: '#fff',
-        minueListBg: 'transparent',
-        minueColor: 'rgba(47, 43, 61, 0.68)',
-        munueHover: 'rgba(47, 43, 61, 0.04)',
-        minueActiveGraideint: {
+        'backGraound': '#f8f9fa',
+        'minueBg': '#fff',
+        'minueListBg': 'transparent',
+        'minueColor': 'rgba(47, 43, 61, 0.68)',
+        'munueHover': 'rgba(47, 43, 61, 0.04)',
+        'minueActiveGraideint': {
           100: 'rgb(115, 103, 240)',
           70: 'rgba(115, 103, 240, 0.7)',
         },
@@ -42,5 +42,7 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+
+  ],
 }

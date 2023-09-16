@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "~@fortawesome/fontawesome-free/css/all.css";
+
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;700&display=swap");
+* {
+  font-family: "Open Sans", sans-serif !important;
+}
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: #f8f9fa;
+}
+
+.nav-item li a {
+  padding: 12px;
+  direction: rtl;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.nav-item li svg {
+  margin-left: 10px;
+}
+
+.pagination {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.page-item {
+  margin-right: 0.5rem;
+}
+
+.page-link {
+  border: 1px solid #ccc;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.page-link.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.page-link.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.show {
+}
+
+.hide {
+  display: none !important;
+}
+
+.minue {
+  display: none;
+}
+
+.hamburger-icon-vertical {
+  cursor: pointer;
+  transform: rotate(90deg); /* دوران الأيقونة 90 درجة */
+}
+@media (max-width: 639px) {
+  .show {
+    display: block !important;
+    width: 100%;
+    position: fixed;
+    z-index: 2;
+  }
+
+  .hide {
+    display: none !important;
+  }
+  .minue {
+    display: block;
+  }
+}
