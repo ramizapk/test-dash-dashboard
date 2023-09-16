@@ -6,11 +6,39 @@ module.exports = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    screens: {
+      'sm': { 'max': '639px' },
+
+      'md': { 'max': '767px' },
+
+      'lg': { 'max': '1023px' },
+
+      'xl': { 'max': '1279px' },
+    },
+    fontFamily: {
+      'sans': ['Ubuntu', 'Sans-serif']
+    },
     extend: {
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      spacing: {
+        '72': '18rem',
+        '84': '21rem',
+        '96': '24rem',
+      },
+      borderRadius: {
+        'custom': '20px', // تحديد قيمة الحدود المستديرة المخصصة هنا
+      },
+      colors: {
+        backGraound: '#f8f9fa',
+        minueBg: '#fff',
+        minueListBg: 'transparent',
+        minueColor: 'rgba(47, 43, 61, 0.68)',
+        munueHover: 'rgba(47, 43, 61, 0.04)',
+        minueActiveGraideint: {
+          100: 'rgb(115, 103, 240)',
+          70: 'rgba(115, 103, 240, 0.7)',
+        },
+        secondary: '#f59e0b',
+
       },
     },
   },

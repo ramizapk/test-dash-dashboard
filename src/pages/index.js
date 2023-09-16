@@ -1,118 +1,259 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-
-const inter = Inter({ subsets: ['latin'] })
+// import Card from '@/Components/Card'
+import Card from "@/Components/Card"
+import HomeTable from "@/Components/HomeTable"
+import api from "@/api/api"
+import Layout from "@/layout/Layout"
+import Image from "next/image"
+import { useEffect, useState } from "react"
+import { AiOutlineHome, AiOutlineTool } from "react-icons/ai"
+import { FaClipboardCheck, FaClipboardList } from "react-icons/fa"
 
 export default function Home() {
-  return (
-    <main
-      className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
-    >
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/pages/index.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+  const [statistics, setStatistics] = useState({
+    myStatistics: [],
+    latestRealEstateOrders: [],
+    latestServiceOrders: [],
+    latestRealEstates: [],
+  })
+  const [loading, setLoading] = useState(false)
+  useEffect(() => {
+    async function fetchStatistics() {
+      const authToken = localStorage.getItem("authToken")
+      try {
+        const statisticsData = await api.get("statistics", authToken)
+        setStatistics({
+          ...statistics,
+          myStatistics: statisticsData.statistics,
+          latestRealEstateOrders: statisticsData.latestRealEstateOrders,
+          latestServiceOrders: statisticsData.latestServiceOrders,
+          latestRealEstates: statisticsData.latestRealEstates,
+        })
+      } catch (error) {
+        console.error("Error fetching real estates:", error)
+      }
+      setLoading(true)
+    }
+    fetchStatistics()
+  }, [])
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700/10 after:dark:from-sky-900 after:dark:via-[#0141ff]/40 before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+  const realEstateColumns = [
+    { key: "id", label: "الرقم" },
+    {
+      key: "attributes",
+      label: "العقار",
+      render: (item) => (
+        <div className='flex items-center'>
+          <Image
+            width={50}
+            height={50}
+            className='w-10 h-10 rounded-full ml-2'
+            src={
+              item.attributes.photo.startsWith("storage")
+                ? `http://127.0.0.1:8000/${item.attributes.photo}`
+                : item.attributes.photo
+            }
+            alt='Jese image'
+          />
+          <div className='pl-3'>
+            <div className='text-base font-semibold'>
+              {item.attributes.name}
+            </div>
+            <div className='font-normal text-gray-500'>
+              {item.attributes.firstType.name}/
+              {item.attributes.secondType == "for rent" ? "للايجار" : "للبيع"}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "location",
+      label: "الموقع",
+      render: (item) => (
+        <div>
+          {item.attributes.location.name}/{item.attributes.locationInfo}
+        </div>
+      ),
+    },
+    {
+      key: "price",
+      label: "السعر",
+      render: (item) => <div>{item.attributes.price}</div>,
+    },
+  ]
+
+  const orderColumns = [
+    { key: "id", label: "الرقم" },
+    {
+      key: "realEstate",
+      label: "العقار",
+      render: (item) => (
+        <div className='flex items-center'>
+          <Image
+            width={50}
+            height={50}
+            className='w-10 h-10 rounded-full ml-2'
+            src={item.real_estate.attributes.photo}
+            alt='Jese image'
+          />
+          <div className='pl-3'>
+            <div className='text-base font-semibold'>
+              {item.real_estate.attributes.name}
+            </div>
+            <div className='font-normal text-gray-500'>
+              {item.real_estate.attributes.firstType.name}/
+              {item.real_estate.attributes.secondType}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "user",
+      label: "مقدم الطلب",
+      render: (item) => (
+        <div className='flex items-center'>
+          <Image
+            width={50}
+            height={50}
+            className='w-10 h-10 rounded-full ml-2'
+            src={item.user.userImage}
+            alt='Jese image'
+          />
+          <div className='pl-3'>
+            <div className='text-base font-semibold'>{item.user.name}</div>
+            <div className='font-normal text-gray-500'>{item.user.email}</div>
+            <div className='font-normal text-gray-500'>
+              {item.user.phoneNumber}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+  ]
+  const servicesOrdersColumns = [
+    { key: "id", label: "الرقم" },
+    {
+      key: "service",
+      label: "الخدمة",
+      render: (item) => (
+        <div className='flex items-center'>
+          <Image
+            width={50}
+            height={50}
+            className='w-10 h-10 rounded-full ml-2'
+            src={item.service.attributes.image}
+            alt='Jese image'
+          />
+          <div className='pl-3'>
+            <div className='text-base font-semibold whitespace-nowrap'>
+              {item.service.attributes.name}
+            </div>
+            <div className='font-normal text-gray-500'>
+
+              {item.service.attributes.type == 1 ? "خدمات انشائية وصيانة" : "موارد بناء وتوريدات"}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "user",
+      label: "مقدم الطلب",
+      render: (item) => (
+        <div className='flex items-center'>
+          <Image
+            width={50}
+            height={50}
+            className='w-10 h-10 rounded-full ml-2'
+            src={item.user.userImage}
+            alt='Jese image'
+          />
+          <div className='pl-3'>
+            <div className='text-base font-semibold'>{item.user.name}</div>
+            <div className='font-normal text-gray-500'>{item.user.email}</div>
+            <div className='font-normal text-gray-500'>
+              {item.user.phoneNumber}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+  ]
+  return (
+    <Layout>
+      <div
+        className='grid grid-cols-4 my-0 gap-4 md:grid-cols-1 py-0 text-black w-full'
+        dir='rtl'
+      >
+        <Card
+          id='1'
+          icon={<AiOutlineHome size={69} color='#3498db' />} // أيقونة تمثيل عدد العقارات مع لون أزرق ملائم
+          title='عدد العقارات'
+          value={statistics.myStatistics.realEstatesCount}
+          label='العدد الاجمالي'
+          color='#3498db'
+        />
+        <Card
+          id=''
+          icon={<AiOutlineTool size={69} color='#27ae60' />} // أيقونة تمثيل عدد الخدمات مع لون أخضر ملائم
+          title='عدد الخدمات'
+          value={statistics.myStatistics.totalServices}
+          label='العدد الاجمالي'
+          color='#27ae60'
+        />
+        <Card
+          id='1'
+          icon={<FaClipboardList size={69} color='#3498db' />} // أيقونة تمثيل طلبات العقارات مع لون أزرق ملائم
+          title=' طلبات العقارات'
+          value={statistics.myStatistics.realEstateOrdersCount}
+          label='العدد الاجمالي'
+          color='#3498db'
+        />
+        <Card
+          id='1'
+          icon={<FaClipboardCheck size={69} color='#2c3e50' />} // أيقونة تمثيل طلبات الخدمات مع لون أخضر داكن ملائم
+          title=' طلبات الخدمات'
+          value={statistics.myStatistics.serviceOrdersCount}
+          label='العدد الاجمالي'
+          color='#2c3e50'
         />
       </div>
 
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Discover and deploy boilerplate example Next.js&nbsp;projects.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      <div
+        className='grid grid-cols-2 mt-5 gap-4 md:grid-cols-1 py-0 text-black w-full'
+        dir='rtl'
+      >
+        <div className=' py-5'>
+          <h1 className='mb-0 mr-0 bg-white p-8 w-full whitespace-nowrap'>
+            احدث العقارات
+          </h1>
+          <HomeTable
+            columns={realEstateColumns}
+            data={statistics.latestRealEstates}
+          />
+        </div>
+        <div>
+          <div className=' py-5'>
+            <h1 className='mb-0 mr-0 bg-white p-8 w-full whitespace-nowrap'>
+              احدث طلبات العقارات
+            </h1>
+            <HomeTable
+              columns={orderColumns}
+              data={statistics.latestRealEstateOrders}
+            />
+          </div>
+          <div className=' py-5'>
+            <h1 className='mb-0 mr-0 bg-white p-8 w-full whitespace-nowrap'>
+              احدث طلبات الخدمات
+            </h1>
+            <HomeTable
+              columns={servicesOrdersColumns}
+              data={statistics.latestServiceOrders}
+            />
+          </div>
+        </div>
       </div>
-    </main>
+    </Layout>
   )
 }
